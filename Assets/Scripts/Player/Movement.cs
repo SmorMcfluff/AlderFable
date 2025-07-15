@@ -4,6 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Movement : MonoBehaviour
 {
+    public FacingDirection facingDirection = FacingDirection.Right;
+
     [Header("Movement")]
     public float movementSpeed = 2.5f;
     public float climbingSpeed = 2.5f;
@@ -45,11 +47,11 @@ public class Movement : MonoBehaviour
         {
             if (horizontalInput < 0 && !sr.flipX)
             {
-                sr.flipX = true;
+                FlipCharacter();
             }
             else if (horizontalInput > 0 && sr.flipX)
             {
-                sr.flipX = false;
+                FlipCharacter();
             }
 
             float currentHorizontalVel = rb.linearVelocity.x;
@@ -75,8 +77,16 @@ public class Movement : MonoBehaviour
         else if(currentLadder != null)
         {
             rb.linearVelocity = new Vector2(0f, vertical * climbingSpeed);
-            CheckLadderPosition(inputAxis.y);
+            CheckLadderPosition(vertical);
         }
+    }
+
+    public void FlipCharacter()
+    {
+        sr.flipX = !sr.flipX;
+        facingDirection = (facingDirection == FacingDirection.Right)
+            ? FacingDirection.Left
+            : FacingDirection.Right;
     }
 
     public bool IsGrounded()
@@ -170,9 +180,9 @@ public class Movement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Ladder"))
+        if (other.CompareTag("Ladder") && other.TryGetComponent<Ladder>(out var ladder))
         {
-            currentLadder = other.GetComponent<Ladder>();
+            currentLadder = ladder;
         }
     }
 
