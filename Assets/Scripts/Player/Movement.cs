@@ -29,6 +29,8 @@ public class Movement : MonoBehaviour
     private Ladder currentLadder;
 
     private bool isOnLadder = false;
+    public bool IsOnLadder => isOnLadder;
+
     private bool readyToClimb = true;
     private bool readyToJump = true;
 

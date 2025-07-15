@@ -18,6 +18,7 @@ public class PlayerInput : MonoBehaviour
     private void Awake()
     {
         movement = GetComponent<Movement>();
+        attack = GetComponent<Attack>();
 
         var playerMap = inputActions.FindActionMap("Player 2D");
         moveAction = playerMap.FindAction("Move");
@@ -44,9 +45,9 @@ public class PlayerInput : MonoBehaviour
             movement.Jump(currentInput);
         }
 
-        if (isAttacking)
+        if (isAttacking && !movement.IsOnLadder)
         {
-            attack.ExecuteAttack
+            attack.TriggerAttack(movement.facingDirection);
         }
     }
 
@@ -62,7 +63,7 @@ public class PlayerInput : MonoBehaviour
 
     private void AttackStart(InputAction.CallbackContext context)
     {
-        isAttacking = false;
+        isAttacking = true;
     }
 
     private void AttackStop(InputAction.CallbackContext context)
