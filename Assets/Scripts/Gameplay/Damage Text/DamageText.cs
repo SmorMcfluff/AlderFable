@@ -35,7 +35,7 @@ public class DamageText : MonoBehaviour
 
         while (elapsedTime < timeUntilFade)
         {
-            transform.position += Vector3.up * riseSpeed * Time.deltaTime;
+            transform.position += riseSpeed * Time.deltaTime * Vector3.up;
             elapsedTime += Time.deltaTime;
             yield return null;
         }
@@ -43,7 +43,7 @@ public class DamageText : MonoBehaviour
         float fadeElapsed = 0f;
         while (fadeElapsed < fadeDuration)
         {
-            transform.position += Vector3.up * riseSpeed * Time.deltaTime;
+            transform.position += riseSpeed * Time.deltaTime * Vector3.up;
 
             float alpha = Mathf.Lerp(1f, 0f, fadeElapsed / fadeDuration);
             Color c = text.color;

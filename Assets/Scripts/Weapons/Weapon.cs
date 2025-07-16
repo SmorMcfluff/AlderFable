@@ -5,18 +5,18 @@ public class Weapon : ScriptableObject
 {
     public string weaponName = "Default Weapon";
 
-    [Header("Weapon Damage")]
     public int minDamage = 1;
     public int maxDamage = 10;
 
     public int maxEnemiesHit = 1;
 
-    [Header("Weapon Speed")]
     public WeaponSpeed weaponSpeed = WeaponSpeed.Fast;
     public float AttackWindup => GetAttackWindup();
     public float AttackDelay=> GetAttackDelay();
     public float attackRange = 1;
+    public float attackHeightFactor = 1;
 
+    public float knockbackForce = 5f;
 
     private float GetAttackWindup()
     {

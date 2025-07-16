@@ -10,9 +10,23 @@ public class Attack : MonoBehaviour
 
     public Weapon equippedWeapon;
 
+    public bool touchAttack = false;
+
+    private EnemyController enemyController;
+
     private void Awake()
     {
         damageLayer = LayerMask.GetMask("Damageable");
+
+        enemyController = GetComponent<EnemyController>();
+    }
+
+    private void FixedUpdate()
+    {
+        if (touchAttack)
+        {
+            StartCoroutine(ExecuteAttack(Vector2.zero));
+        }
     }
 
     public void TriggerAttack(FacingDirection direction)
@@ -27,16 +41,21 @@ public class Attack : MonoBehaviour
         readyToAttack = false;
         yield return new WaitForSeconds(equippedWeapon.AttackWindup);
 
-        Vector2 hitBoxSize = new(equippedWeapon.attackRange, transform.localScale.y);
+        float hitboxHeight = transform.localScale.y * equippedWeapon.attackHeightFactor;
+        Vector2 hitBoxSize = new(equippedWeapon.attackRange, hitboxHeight);
         Vector2 hitBoxOffset = direction * (equippedWeapon.attackRange / 2f);
         Vector2 boxOrigin = (Vector2)transform.position + hitBoxOffset;
 
         DrawHitBox(hitBoxSize, hitBoxOffset);
-        RaycastHit2D[] hits = Physics2D.BoxCastAll(boxOrigin, hitBoxSize, 0, hitBoxOffset, 0, damageLayer);
+        Collider2D[] hits = Physics2D.OverlapBoxAll(boxOrigin, hitBoxSize, 0, damageLayer);
 
-        foreach (var enemies in GetHitEnemies(hits))
+        foreach (var enemy in GetHitEnemies(hits))
         {
-            enemies.TakeDamage(Random.Range(equippedWeapon.minDamage, equippedWeapon.maxDamage + 1));
+            enemy.TakeDamage(this, Random.Range(equippedWeapon.minDamage, equippedWeapon.maxDamage + 1));
+            if(enemyController != null)
+            {
+                enemyController.AddTarget(enemy);
+            }
         }
 
         StartCoroutine(AttackCooldown());
@@ -68,18 +87,23 @@ public class Attack : MonoBehaviour
         };
     }
 
-    private List<IDamageable> GetHitEnemies(RaycastHit2D[] hits)
+    private List<IDamageable> GetHitEnemies(Collider2D[] hits)
     {
         List<IDamageable> hitTargets = new();
         List<(IDamageable damageable, Vector3 position)> candidates = new();
+        HashSet<GameObject> seenObjects = new();
 
         string opponentTeam = GetTeamToAttack();
         foreach (var hit in hits)
         {
-            if (hit.collider.TryGetComponent(out IDamageable damageable) &&
-                hit.collider.CompareTag(opponentTeam))
+            if (hit.TryGetComponent(out IDamageable damageable) &&
+                hit.CompareTag(opponentTeam))
             {
-                candidates.Add((damageable, hit.transform.position));
+                GameObject obj = (damageable as Component).gameObject;
+                if (seenObjects.Add(obj))
+                {
+                    candidates.Add((damageable, hit.transform.position));
+                }
             }
         }
 
@@ -90,10 +114,7 @@ public class Attack : MonoBehaviour
 
         foreach (var (damageable, _) in sorted)
         {
-            if (!hitTargets.Contains(damageable))
-            {
-                hitTargets.Add(damageable);
-            }
+            hitTargets.Add(damageable);
         }
 
         return hitTargets;

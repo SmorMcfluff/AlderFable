@@ -12,6 +12,8 @@ public class Movement : MonoBehaviour
     public float jumpForce = 5f;
     public float decelerationRate = 10f;
     public float jumpDelay = 0.5f;
+    public float knockbackStunDuration = 0.25f;
+    public bool canClimbLadders = false;
 
     [Header("Ladder Jump")]
     public float ladderJumpHorizontalForce = 5f;
@@ -34,24 +36,28 @@ public class Movement : MonoBehaviour
     private bool readyToClimb = true;
     private bool readyToJump = true;
 
+    private bool isStunned = false;
+
+    private float defaultDirection;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+
+        defaultDirection = (facingDirection == FacingDirection.Right) ? 1f : -1f;
     }
 
     public void Move(Vector2 inputAxis)
     {
+        if (isStunned) return;
+
         float horizontalInput = (inputAxis.x == 0f) ? 0f : Mathf.Sign(inputAxis.x);
         float vertical = (inputAxis.y == 0f) ? 0f : Mathf.Sign(inputAxis.y);
 
         if (!isOnLadder)
         {
-            if (horizontalInput < 0 && !sr.flipX)
-            {
-                FlipCharacter();
-            }
-            else if (horizontalInput > 0 && sr.flipX)
+            if (ShouldFlip(horizontalInput))
             {
                 FlipCharacter();
             }
@@ -76,14 +82,20 @@ public class Movement : MonoBehaviour
                 TriggerVertical(vertical);
             }
         }
-        else if(currentLadder != null)
+        else if (canClimbLadders && currentLadder != null)
         {
             rb.linearVelocity = new Vector2(0f, vertical * climbingSpeed);
             CheckLadderPosition(vertical);
         }
     }
 
-    public void FlipCharacter()
+    private bool ShouldFlip(float direction)
+    {
+        if(direction == 0f) return false;
+        return direction == defaultDirection && sr.flipX || direction != defaultDirection && !sr.flipX;
+    }
+
+    private void FlipCharacter()
     {
         sr.flipX = !sr.flipX;
         facingDirection = (facingDirection == FacingDirection.Right)
@@ -94,11 +106,19 @@ public class Movement : MonoBehaviour
     public bool IsGrounded()
     {
         Vector2 boxSize = new(groundCheckWidth, groundCheckHeight);
-        return Physics2D.BoxCast(transform.position, boxSize, 0, Vector2.down, groundCheckOffset, groundMask);
+
+        bool isGrounded = Physics2D.BoxCast(transform.position, boxSize, 0, Vector2.down, groundCheckOffset, groundMask);
+        return isGrounded;
+    }
+
+    public Bounds GetBounds()
+    {
+        return Physics2D.Raycast(transform.position, Vector2.down, groundCheckHeight, groundMask).collider.bounds;
     }
 
     private void TriggerVertical(float direction)
     {
+        if (!canClimbLadders) return;
         if (currentLadder != null && readyToClimb)
         {
             bool bottomEntrance = rb.position.y < currentLadder.Top && direction > 0;
@@ -114,6 +134,7 @@ public class Movement : MonoBehaviour
 
     private void CheckLadderPosition(float direction)
     {
+        if (!canClimbLadders) return;
         bool bottomExit = rb.position.y < currentLadder.Bottom && direction < 0;
         bool topExit = rb.position.y > currentLadder.Top && direction > 0;
 
@@ -125,6 +146,7 @@ public class Movement : MonoBehaviour
 
     private void SetLadder(bool ladderGrabbed, float input = 0, bool jumpedOff = true, bool topEntrance = false)
     {
+        if (!canClimbLadders && ladderGrabbed) return;
         if (ladderGrabbed && !readyToClimb) return;
         isOnLadder = ladderGrabbed;
         rb.bodyType = ladderGrabbed ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
@@ -152,7 +174,7 @@ public class Movement : MonoBehaviour
 
     public void Jump(Vector2 input)
     {
-        if(!readyToJump) return;
+        if (!readyToJump) return;
         if (!isOnLadder && IsGrounded())
         {
             rb.AddForce(jumpForce * Vector2.up, ForceMode2D.Impulse);
@@ -180,6 +202,35 @@ public class Movement : MonoBehaviour
         readyToClimb = true;
     }
 
+    public void Knockback(float direction, float knockbackForce)
+    {
+        if (isOnLadder)
+        {
+            SetLadder(false, direction, true);
+            Stun();
+        }
+        else
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.AddForce(new Vector2(direction * knockbackForce, 0), ForceMode2D.Impulse);
+            Stun();
+        }
+    }
+
+    public void Stun()
+    {
+        if (isStunned) return;
+        StartCoroutine(StunTimer());
+    }
+
+
+    private IEnumerator StunTimer()
+    {
+        isStunned = true;
+        yield return new WaitForSeconds(knockbackStunDuration);
+        isStunned = false;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Ladder") && other.TryGetComponent<Ladder>(out var ladder))
@@ -195,6 +246,7 @@ public class Movement : MonoBehaviour
             currentLadder = null;
         }
     }
+
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
