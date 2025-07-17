@@ -7,6 +7,7 @@ public class Ladder : MonoBehaviour
 
     public float Top => bounds.max.y;
     public float Bottom => bounds.min.y;
+    public float Height => Top - Bottom;
     public Vector2 Center => bounds.center;
 
     private void Awake()

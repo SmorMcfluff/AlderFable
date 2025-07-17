@@ -9,10 +9,8 @@ public class EnemyController : MonoBehaviour
     public float wanderMinCooldown = 0.5f;
     public float wanderMaxCooldown = 3f;
 
-    private Movement movement;
-    private Attack attack;
-
-    private Collider2D platform;
+    public Movement movement;
+    public Attack attack;
 
     private List<IDamageable> targets = new List<IDamageable>();
 
@@ -51,10 +49,11 @@ public class EnemyController : MonoBehaviour
 
     private void Wander()
     {
-        if (platform != null)
+        Collider2D currentPlatform = movement.currentPlatform;
+        if (currentPlatform != null)
         {
-            float platformLeft = platform.bounds.min.x;
-            float platformRight = platform.bounds.max.x;
+            float platformLeft = currentPlatform.bounds.min.x;
+            float platformRight = currentPlatform.bounds.max.x;
 
             float wanderLeft = transform.position.x - wanderRange;
             float wanderRight = transform.position.x + wanderRange;
@@ -78,6 +77,7 @@ public class EnemyController : MonoBehaviour
     {
         if (!canWander) yield break;
         canWander = false;
+
         float speed = movement.movementSpeed;
         float distance = Vector2.Distance(transform.position, targetPoint);
         float timeToReachTarget = distance / speed;
@@ -101,9 +101,23 @@ public class EnemyController : MonoBehaviour
     {
         IDamageable target = GetNearestTarget();
         if (target == null) return Vector2.zero;
-
+        
         Vector2 targetPosition = (target as Component).transform.position;
-        Vector2 currentPosition = transform.position;
+        float horizontalDistance = Mathf.Abs(targetPosition.x - transform.position.x);
+        if (horizontalDistance < 0.1f) return Vector2.zero;
+
+        float platformLeft = movement.currentPlatform.bounds.min.x;
+        float platformRight = movement.currentPlatform.bounds.max.x;
+
+        if (targetPosition.x < platformLeft)
+        {
+            targetPosition = new(platformLeft, targetPosition.y);
+        }
+        else if (targetPosition.x > platformRight)
+        {
+            targetPosition = new(platformRight, targetPosition.y);
+        }
+            Vector2 currentPosition = transform.position;
 
         return (targetPosition - currentPosition).normalized;
     }
@@ -135,6 +149,7 @@ public class EnemyController : MonoBehaviour
 
     public void AddTarget(IDamageable newTarget)
     {
+        Debug.Log((newTarget as Component).name);
         if (newTarget != null && !targets.Contains(newTarget))
         {
             targets.Add(newTarget);
@@ -143,14 +158,6 @@ public class EnemyController : MonoBehaviour
                 StopCoroutine(wanderRoutine);
                 wanderRoutine = null;
             }
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Platform"))
-        {
-            platform = collision.collider;
         }
     }
 

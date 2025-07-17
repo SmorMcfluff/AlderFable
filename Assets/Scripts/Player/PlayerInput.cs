@@ -11,8 +11,6 @@ public class PlayerInput : MonoBehaviour
     private Movement movement;
     private Attack attack;
 
-    private Bounds platformBounds;
-
     private Vector2 currentInput = Vector2.zero;
     private bool isJumping;
     private bool isAttacking;
@@ -119,13 +117,4 @@ public class PlayerInput : MonoBehaviour
         attackAction.Disable();
     }
     #endregion
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Platform"))
-        {
-            platformBounds = collision.collider.bounds;
-            Debug.Log("Setting bounds!");
-        }
-    }
 }

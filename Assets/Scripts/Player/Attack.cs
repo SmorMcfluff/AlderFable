@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class Attack : MonoBehaviour
 {
-    LayerMask damageLayer;
-    bool readyToAttack = true;
-
     public Weapon equippedWeapon;
+    LayerMask damageLayer;
 
+
+    private bool readyToAttack = true;
+    public bool ReadyToAttack => readyToAttack;
     public bool touchAttack = false;
 
     private EnemyController enemyController;
@@ -38,8 +39,11 @@ public class Attack : MonoBehaviour
 
     private IEnumerator ExecuteAttack(Vector2 direction)
     {
-        readyToAttack = false;
-        yield return new WaitForSeconds(equippedWeapon.AttackWindup);
+        if (!touchAttack)
+        {
+            readyToAttack = false;
+            yield return new WaitForSeconds(equippedWeapon.AttackWindup);
+        }
 
         float hitboxHeight = transform.localScale.y * equippedWeapon.attackHeightFactor;
         Vector2 hitBoxSize = new(equippedWeapon.attackRange, hitboxHeight);
@@ -52,13 +56,16 @@ public class Attack : MonoBehaviour
         foreach (var enemy in GetHitEnemies(hits))
         {
             enemy.TakeDamage(this, Random.Range(equippedWeapon.minDamage, equippedWeapon.maxDamage + 1));
-            if(enemyController != null)
+            if (enemyController != null)
             {
                 enemyController.AddTarget(enemy);
             }
         }
 
-        StartCoroutine(AttackCooldown());
+        if (!touchAttack)
+        {
+            StartCoroutine(AttackCooldown());
+        }
     }
 
     private Vector2 SetDirection(FacingDirection direction)
@@ -96,8 +103,7 @@ public class Attack : MonoBehaviour
         string opponentTeam = GetTeamToAttack();
         foreach (var hit in hits)
         {
-            if (hit.TryGetComponent(out IDamageable damageable) &&
-                hit.CompareTag(opponentTeam))
+            if (hit.TryGetComponent(out IDamageable damageable) && hit.CompareTag(opponentTeam))
             {
                 GameObject obj = (damageable as Component).gameObject;
                 if (seenObjects.Add(obj))

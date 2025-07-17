@@ -21,6 +21,7 @@ public class Movement : MonoBehaviour
     public float ladderGrabDelay = 0.5f;
 
     [Header("Ground Check")]
+    public Collider2D currentPlatform;
     public float groundCheckWidth = 1;
     public float groundCheckHeight = 0.1f;
     public float groundCheckOffset = 0.8f;
@@ -28,7 +29,10 @@ public class Movement : MonoBehaviour
 
     private SpriteRenderer sr;
     private Rigidbody2D rb;
+    private Attack attack;
+
     private Ladder currentLadder;
+    
 
     private bool isOnLadder = false;
     public bool IsOnLadder => isOnLadder;
@@ -44,12 +48,15 @@ public class Movement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
+        attack = GetComponent<Attack>();
 
         defaultDirection = (facingDirection == FacingDirection.Right) ? 1f : -1f;
     }
 
     public void Move(Vector2 inputAxis)
     {
+        if (!attack.ReadyToAttack) inputAxis = Vector2.zero;
+
         if (isStunned) return;
 
         float horizontalInput = (inputAxis.x == 0f) ? 0f : Mathf.Sign(inputAxis.x);
@@ -95,7 +102,7 @@ public class Movement : MonoBehaviour
         return direction == defaultDirection && sr.flipX || direction != defaultDirection && !sr.flipX;
     }
 
-    private void FlipCharacter()
+    public void FlipCharacter()
     {
         sr.flipX = !sr.flipX;
         facingDirection = (facingDirection == FacingDirection.Right)
@@ -111,7 +118,7 @@ public class Movement : MonoBehaviour
         return isGrounded;
     }
 
-    public Bounds GetBounds()
+    public Bounds GetPlatformBounds()
     {
         return Physics2D.Raycast(transform.position, Vector2.down, groundCheckHeight, groundMask).collider.bounds;
     }
@@ -231,6 +238,16 @@ public class Movement : MonoBehaviour
         isStunned = false;
     }
 
+    public Bounds GetColliderBounds()
+    {
+        return GetComponent<Collider2D>().bounds;
+    }
+
+    public void SetCurrentPlatform(Collider2D newPlatform)
+    {
+        currentPlatform = newPlatform;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Ladder") && other.TryGetComponent<Ladder>(out var ladder))
@@ -247,6 +264,13 @@ public class Movement : MonoBehaviour
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Platform"))
+        {
+            currentPlatform = collision.collider;
+        }
+    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
