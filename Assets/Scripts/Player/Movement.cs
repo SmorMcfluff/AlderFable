@@ -146,10 +146,10 @@ public class Movement : MonoBehaviour
         if (!canClimbLadders) return;
         float topOffset = 0.1f;
         float topPlatformTop = currentLadder.topPlatform.Top;
-        float bottomPlatformTop = currentLadder.bottomPlatform.Top;
+        float ladderBottom = currentLadder.Bottom;
 
         bool topExit = rb.position.y > topPlatformTop - topOffset && direction > 0;
-        bool bottomExit = rb.position.y < bottomPlatformTop - topOffset && direction < 0;
+        bool bottomExit = rb.position.y < ladderBottom - topOffset && direction < 0;
 
         if (bottomExit || topExit)
         {

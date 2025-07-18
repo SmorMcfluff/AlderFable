@@ -7,9 +7,12 @@ public class PlayerInput : MonoBehaviour
     private InputAction moveAction;
     private InputAction jumpAction;
     private InputAction attackAction;
+    private InputAction chatAction;
+
 
     private Movement movement;
     private Attack attack;
+    private Chatting chat;
 
     private Vector2 currentInput = Vector2.zero;
     private bool isJumping;
@@ -19,11 +22,14 @@ public class PlayerInput : MonoBehaviour
     {
         movement = GetComponent<Movement>();
         attack = GetComponent<Attack>();
+        chat = GetComponent<Chatting>();
 
         var playerMap = inputActions.FindActionMap("Player 2D");
         moveAction = playerMap.FindAction("Move");
         jumpAction = playerMap.FindAction("Jump");
         attackAction = playerMap.FindAction("Attack");
+        chatAction = playerMap.FindAction("Chat");
+
     }
 
     private void MoveStart(InputAction.CallbackContext context)
@@ -38,6 +44,12 @@ public class PlayerInput : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (chat.isTyping)
+        {
+            currentInput = Vector2.zero;
+            return;
+        }
+
         movement.Move(currentInput);
 
         if (isJumping)
@@ -71,6 +83,18 @@ public class PlayerInput : MonoBehaviour
         isAttacking = false;
     }
 
+    private void ChatPressed(InputAction.CallbackContext context)
+    {
+        if (chat.isTyping)
+        {
+            chat.SendChat();
+        }
+        else
+        {
+            chat.ToggleChat();
+        }
+    }
+
     #region Event Subscription/Unsubscription
     private void OnEnable()
     {
@@ -100,6 +124,9 @@ public class PlayerInput : MonoBehaviour
         attackAction.Enable();
         attackAction.performed += AttackStart;
         attackAction.canceled += AttackStop;
+
+        chatAction.Enable();
+        chatAction.performed += ChatPressed;
     }
 
     private void Unsubscribe()
@@ -115,6 +142,9 @@ public class PlayerInput : MonoBehaviour
         attackAction.performed -= AttackStart;
         attackAction.canceled -= AttackStop;
         attackAction.Disable();
+
+        chatAction.Disable();
+        chatAction.performed -= ChatPressed;
     }
     #endregion
 }

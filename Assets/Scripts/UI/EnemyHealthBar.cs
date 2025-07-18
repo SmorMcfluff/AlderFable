@@ -16,7 +16,6 @@ public class EnemyHealthBar : MonoBehaviour
         {
             foreach (Transform child in transform)
             {
-                Debug.Log(child.name);
                 child.gameObject.SetActive(false);
             }
         }
@@ -28,11 +27,9 @@ public class EnemyHealthBar : MonoBehaviour
         {
             foreach (Transform child in transform)
             {
-                Debug.Log(child.name);
                 child.gameObject.SetActive(true);
             }
         }
-
         ScaleFill();
     }
 
