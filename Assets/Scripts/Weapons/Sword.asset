@@ -18,4 +18,5 @@ MonoBehaviour:
   maxEnemiesHit: 3
   weaponSpeed: 1
   attackRange: 2
-  knockbackForce: 5
+  attackHeightFactor: 1
+  knockbackForce: 4

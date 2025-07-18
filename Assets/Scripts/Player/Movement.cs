@@ -94,7 +94,7 @@ public class Movement : MonoBehaviour
         else if (canClimbLadders && currentLadder != null)
         {
             rb.linearVelocity = new Vector2(0f, vertical * climbingSpeed);
-            CheckLadderPosition(vertical);
+            CheckLadderExit(vertical);
         }
     }
 
@@ -141,11 +141,15 @@ public class Movement : MonoBehaviour
         }
     }
 
-    private void CheckLadderPosition(float direction)
+    private void CheckLadderExit(float direction)
     {
         if (!canClimbLadders) return;
-        bool bottomExit = rb.position.y < currentLadder.Bottom && direction < 0;
-        bool topExit = rb.position.y > currentLadder.Top && direction > 0;
+        float topOffset = 0.1f;
+        float topPlatformTop = currentLadder.topPlatform.Top;
+        float bottomPlatformTop = currentLadder.bottomPlatform.Top;
+
+        bool topExit = rb.position.y > topPlatformTop - topOffset && direction > 0;
+        bool bottomExit = rb.position.y < bottomPlatformTop - topOffset && direction < 0;
 
         if (bottomExit || topExit)
         {
@@ -153,16 +157,17 @@ public class Movement : MonoBehaviour
         }
     }
 
-    private void SetLadder(bool ladderGrabbed, float input = 0, bool jumpedOff = true, bool topEntrance = false)
+    private void SetLadder(bool gotOnLadder, float input = 0, bool jumpedOff = true, bool topEntrance = false)
     {
-        if (!canClimbLadders && ladderGrabbed) return;
-        if (ladderGrabbed && !readyToClimb) return;
-        isOnLadder = ladderGrabbed;
-        rb.bodyType = ladderGrabbed ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
+        if (!canClimbLadders && gotOnLadder) return;
+        if (gotOnLadder && !readyToClimb) return;
+        Debug.Log(gotOnLadder);
+        isOnLadder = gotOnLadder;
+        rb.bodyType = gotOnLadder ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
 
         rb.linearVelocity = Vector2.zero;
 
-        if (ladderGrabbed)
+        if (gotOnLadder)
         {
             float targetY = topEntrance ? currentLadder.Top : rb.position.y;
 
@@ -187,7 +192,7 @@ public class Movement : MonoBehaviour
         Debug.Log(isOnLadder + ", " + IsGrounded());
         if (!isOnLadder && IsGrounded())
         {
-            if (input != Vector2.down)
+            if (input.y >= 0)
             {
                 rb.AddForce(jumpForce * Vector2.up, ForceMode2D.Impulse);
             }

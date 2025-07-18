@@ -184,6 +184,8 @@ public class NPCController : MonoBehaviour
             movement.Jump(Vector2.down);
             return;
         }
+
+        //Ladder Stuff==========================================================
         Ladder ladderToUse = currentPlatform.ladders
             .FirstOrDefault(l => l.topPlatform == nextPlatform || l.bottomPlatform == nextPlatform);
 
@@ -201,8 +203,9 @@ public class NPCController : MonoBehaviour
             return;
         }
 
-        float dirToPlatform = Mathf.Sign(nextPlatform.transform.position.y - myPos.y);
-        movement.Move(new(0, dirToPlatform));
+        float dirToLadderTarget = Mathf.Sign(nextPlatform.Top - myPos.y);
+        Debug.Log(dirToLadderTarget);
+        movement.Move(new(0, dirToLadderTarget));
     }
 
     private bool AttemptDownJump(Platform nextPlatform, float myPosY)

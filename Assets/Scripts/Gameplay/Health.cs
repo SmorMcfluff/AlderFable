@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,8 +13,9 @@ public class Health : MonoBehaviour, IDamageable
     public bool useInvincibility = false;
     public bool isInvincible = false;
 
-    [SerializeField] private int currentHealth;
+    public int currentHealth;
 
+    public Action OnDamaged;
     public UnityEvent OnDeath;
     private Movement movement;
 
@@ -39,7 +41,9 @@ public class Health : MonoBehaviour, IDamageable
         if (isInvincible || IsDead) return;
         currentHealth -= damage;
 
+        OnDamaged?.Invoke();
         SpawnDamageText(damage);
+
 
         if (currentHealth <= 0)
         {
