@@ -1,0 +1,24 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Platform : MonoBehaviour
+{
+    private Collider2D col;
+    public List<Ladder> ladders;
+    public Bounds bounds => col.bounds;
+    public bool isTwoWay;
+
+    private void Awake()
+    {
+        col = GetComponent<Collider2D>();
+        isTwoWay = GetComponent<PlatformEffector2D>();
+    }
+
+    public void AddLadder(Ladder ladder)
+    {
+        if (!ladders.Contains(ladder))
+        {
+            ladders.Add(ladder);
+        }
+    }
+}

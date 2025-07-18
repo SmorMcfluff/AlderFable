@@ -33,6 +33,7 @@ public class EnemyController : MonoBehaviour
         {
             movement.Move(GetDirectionToTarget());
         }
+        BoundsCheck();
     }
 
     private void SetMoveTarget()
@@ -49,7 +50,7 @@ public class EnemyController : MonoBehaviour
 
     private void Wander()
     {
-        Collider2D currentPlatform = movement.currentPlatform;
+        Platform currentPlatform = movement.currentPlatform;
         if (currentPlatform != null)
         {
             float platformLeft = currentPlatform.bounds.min.x;
@@ -149,7 +150,6 @@ public class EnemyController : MonoBehaviour
 
     public void AddTarget(IDamageable newTarget)
     {
-        Debug.Log((newTarget as Component).name);
         if (newTarget != null && !targets.Contains(newTarget))
         {
             targets.Add(newTarget);
@@ -159,6 +159,22 @@ public class EnemyController : MonoBehaviour
                 wanderRoutine = null;
             }
         }
+    }
+
+    private void BoundsCheck()
+    {
+        float platformLeft = movement.currentPlatform.bounds.min.x; //<This line
+        float platformRight = movement.currentPlatform.bounds.max.x;
+        Vector2 newPos = transform.position;
+        if (transform.position.x < platformLeft)
+        {
+            newPos.x = platformLeft + 0.1f;
+        }
+        else if (transform.position.x > platformRight)
+        {
+            newPos.x = platformRight - 0.1f;
+        }
+        transform.position = newPos;
     }
 
 #if UNITY_EDITOR

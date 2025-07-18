@@ -6,6 +6,8 @@ public class Movement : MonoBehaviour
 {
     public FacingDirection facingDirection = FacingDirection.Right;
 
+    public Collider2D physicsCollider;
+
     [Header("Movement")]
     public float movementSpeed = 2.5f;
     public float climbingSpeed = 2.5f;
@@ -21,7 +23,7 @@ public class Movement : MonoBehaviour
     public float ladderGrabDelay = 0.5f;
 
     [Header("Ground Check")]
-    public Collider2D currentPlatform;
+    public Platform currentPlatform;
     public float groundCheckWidth = 1;
     public float groundCheckHeight = 0.1f;
     public float groundCheckOffset = 0.8f;
@@ -32,7 +34,7 @@ public class Movement : MonoBehaviour
     private Attack attack;
 
     private Ladder currentLadder;
-    
+
 
     private bool isOnLadder = false;
     public bool IsOnLadder => isOnLadder;
@@ -98,7 +100,7 @@ public class Movement : MonoBehaviour
 
     private bool ShouldFlip(float direction)
     {
-        if(direction == 0f) return false;
+        if (direction == 0f) return false;
         return direction == defaultDirection && sr.flipX || direction != defaultDirection && !sr.flipX;
     }
 
@@ -182,9 +184,17 @@ public class Movement : MonoBehaviour
     public void Jump(Vector2 input)
     {
         if (!readyToJump) return;
+        Debug.Log(isOnLadder + ", " + IsGrounded());
         if (!isOnLadder && IsGrounded())
         {
-            rb.AddForce(jumpForce * Vector2.up, ForceMode2D.Impulse);
+            if (input != Vector2.down)
+            {
+                rb.AddForce(jumpForce * Vector2.up, ForceMode2D.Impulse);
+            }
+            else if (currentPlatform.GetComponent<PlatformEffector2D>())
+            {
+                StartCoroutine(JumpThroughPlatform());
+            }
         }
 
         if (isOnLadder && input.x != 0)
@@ -238,12 +248,20 @@ public class Movement : MonoBehaviour
         isStunned = false;
     }
 
+    private IEnumerator JumpThroughPlatform()
+    {
+        physicsCollider.enabled = false;
+        yield return new WaitForSeconds(0.5f);
+        SetCurrentPlatform(null);
+        physicsCollider.enabled = true;
+    }
+
     public Bounds GetColliderBounds()
     {
         return GetComponent<Collider2D>().bounds;
     }
 
-    public void SetCurrentPlatform(Collider2D newPlatform)
+    public void SetCurrentPlatform(Platform newPlatform)
     {
         currentPlatform = newPlatform;
     }
@@ -268,9 +286,10 @@ public class Movement : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Platform"))
         {
-            currentPlatform = collision.collider;
+            currentPlatform = collision.collider.GetComponent<Platform>();
         }
     }
+
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
