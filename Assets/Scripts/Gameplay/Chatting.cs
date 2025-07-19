@@ -16,6 +16,12 @@ public class Chatting : MonoBehaviour
     {
         chatField.gameObject.SetActive(!chatField.isActiveAndEnabled);
         isTyping = chatField.isActiveAndEnabled;
+
+        if (isTyping)
+        {
+            chatField.Select();
+            chatField.ActivateInputField();
+        }
     }
 
     public void SendChat()

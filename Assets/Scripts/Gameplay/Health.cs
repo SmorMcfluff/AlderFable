@@ -11,19 +11,20 @@ public class Health : MonoBehaviour, IDamageable
     public float invincibilityTime = 0.75f;
     public float redFlashTime = 0.1f;
     public bool useInvincibility = false;
-    public bool isInvincible = false;
+    [HideInInspector] public bool isInvincible = false;
+    public bool canDie = true;
 
     public int currentHealth;
 
     public Action OnDamaged;
     public UnityEvent OnDeath;
-    private Movement movement;
+    [HideInInspector] public Movement movement;
 
     public bool IsDead => currentHealth <= 0;
 
     private EnemyController enemyController;
     private SpriteRenderer sr;
-    private Color defaultColor;
+    [HideInInspector] public Color defaultColor;
 
 
     private void Awake()
@@ -39,7 +40,15 @@ public class Health : MonoBehaviour, IDamageable
     public void TakeDamage(Attack attacker, int damage)
     {
         if (isInvincible || IsDead) return;
-        currentHealth -= damage;
+        if (!canDie)
+        {
+            currentHealth -= 0;
+        }
+        else
+        {
+            currentHealth -= damage;
+        }
+
 
         OnDamaged?.Invoke();
         SpawnDamageText(damage);
@@ -82,7 +91,18 @@ public class Health : MonoBehaviour, IDamageable
 
     private void Die()
     {
-        Debug.Log($"{gameObject.name} has died.");
+        if (CompareTag("Enemy"))
+        {
+            sr.color = Color.clear;
+            movement.enabled = false;
+            enemyController.targets.Clear();
+            enemyController.enabled = false;
+            enemyController.attack.enabled = false;
+            enabled = false;
+            enemyController.owningSpawner.RespawnEnemy();
+            enemyController.healthBar.gameObject.SetActive(false);
+        }
+
         OnDeath?.Invoke();
     }
 
@@ -104,6 +124,7 @@ public class Health : MonoBehaviour, IDamageable
         isInvincible = false;
         sr.color = defaultColor;
     }
+
     public IEnumerator FlashRed()
     {
         sr.color = Color.red;

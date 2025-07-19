@@ -100,7 +100,7 @@ public class NPCController : MonoBehaviour
             if (hit.TryGetComponent(out IDamageable damageable) && hit.CompareTag("Enemy"))
             {
                 EnemyController enemy = (damageable as Component).GetComponent<EnemyController>();
-                if (seenObjects.Add(damageable))
+                if (enemy.enabled && seenObjects.Add(damageable))
                 {
                     enemyDistances[damageable] = GetEnemyDistance(damageable);
                 }

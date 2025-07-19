@@ -32,6 +32,7 @@ public class Movement : MonoBehaviour
     private SpriteRenderer sr;
     private Rigidbody2D rb;
     private Attack attack;
+    private PlayerAnimator anim;
 
     private Ladder currentLadder;
 
@@ -51,18 +52,34 @@ public class Movement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         attack = GetComponent<Attack>();
+        anim = GetComponent<PlayerAnimator>();
 
         defaultDirection = (facingDirection == FacingDirection.Right) ? 1f : -1f;
     }
 
     public void Move(Vector2 inputAxis)
     {
-        if (!attack.ReadyToAttack) inputAxis = Vector2.zero;
+        if (!attack.ReadyToAttack)
+        {
+            inputAxis = Vector2.zero;
+        }
 
         if (isStunned) return;
 
         float horizontalInput = (inputAxis.x == 0f) ? 0f : Mathf.Sign(inputAxis.x);
         float vertical = (inputAxis.y == 0f) ? 0f : Mathf.Sign(inputAxis.y);
+
+        if (anim != null && attack.ReadyToAttack)
+        {
+            if (horizontalInput != 0)
+            {
+                anim.WalkAnimation();
+            }
+            else
+            {
+                anim.SetSprite(anim.idleSprite, true);
+            }
+        }
 
         if (!isOnLadder)
         {

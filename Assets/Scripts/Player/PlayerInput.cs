@@ -46,7 +46,7 @@ public class PlayerInput : MonoBehaviour
     {
         if (chat.isTyping)
         {
-            currentInput = Vector2.zero;
+            movement.Move(Vector2.zero);
             return;
         }
 

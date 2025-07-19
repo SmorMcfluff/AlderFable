@@ -10,14 +10,19 @@ public class EnemyHealthBar : MonoBehaviour
     private void Awake()
     {
         health = GetComponentInParent<Health>();
-        fullFillWidth = transform.localScale.x;
+        fullFillWidth = fill.transform.localScale.x;
 
         if (fill.gameObject.activeSelf)
         {
-            foreach (Transform child in transform)
-            {
-                child.gameObject.SetActive(false);
-            }
+            HideChildren();
+        }
+    }
+
+    public void HideChildren()
+    {
+        foreach (Transform child in transform)
+        {
+            child.gameObject.SetActive(false);
         }
     }
 
@@ -38,7 +43,7 @@ public class EnemyHealthBar : MonoBehaviour
         float normalizedHealth = Mathf.InverseLerp(0, health.maxHealth, health.currentHealth);
         normalizedHealth = Mathf.Clamp01(normalizedHealth);
         Vector3 newScale = fill.transform.localScale;
-        newScale.x *= normalizedHealth;
+        newScale.x = fullFillWidth * normalizedHealth;
         fill.transform.localScale = newScale;
     }
 
@@ -63,4 +68,5 @@ public class EnemyHealthBar : MonoBehaviour
     {
         health.OnDamaged -= HandleHealthbar;
     }
+
 }

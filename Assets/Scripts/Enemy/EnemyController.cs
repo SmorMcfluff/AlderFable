@@ -9,10 +9,15 @@ public class EnemyController : MonoBehaviour
     public float wanderMinCooldown = 0.5f;
     public float wanderMaxCooldown = 3f;
 
+    [HideInInspector] public EnemySpawner owningSpawner;
+
     public Movement movement;
     public Attack attack;
+    public Health health;
 
-    private List<IDamageable> targets = new List<IDamageable>();
+    [HideInInspector] public EnemyHealthBar healthBar;
+
+    [HideInInspector] public List<IDamageable> targets = new List<IDamageable>();
 
     private bool canWander = true;
     private Coroutine wanderRoutine;
@@ -21,9 +26,19 @@ public class EnemyController : MonoBehaviour
     {
         movement = GetComponent<Movement>();
         attack = GetComponent<Attack>();
+        health = GetComponent<Health>();
+        healthBar = GetComponentInChildren<EnemyHealthBar>();
     }
 
     private void FixedUpdate()
+    {
+        if (!health.IsDead)
+        {
+            HandleMovement();
+        }
+    }
+
+    private void HandleMovement()
     {
         if (targets.Count == 0)
         {
@@ -34,18 +49,6 @@ public class EnemyController : MonoBehaviour
             movement.Move(GetDirectionToTarget());
         }
         BoundsCheck();
-    }
-
-    private void SetMoveTarget()
-    {
-        if (targets.Count == 0)
-        {
-            Wander();
-        }
-        else
-        {
-            GetDirectionToTarget();
-        }
     }
 
     private void Wander()
@@ -163,7 +166,7 @@ public class EnemyController : MonoBehaviour
 
     private void BoundsCheck()
     {
-        float platformLeft = movement.currentPlatform.bounds.min.x; //<This line
+        float platformLeft = movement.currentPlatform.bounds.min.x;
         float platformRight = movement.currentPlatform.bounds.max.x;
         Vector2 newPos = transform.position;
         if (transform.position.x < platformLeft)

@@ -7,7 +7,7 @@ public class Attack : MonoBehaviour
 {
     public Weapon equippedWeapon;
     LayerMask damageLayer;
-
+    private PlayerAnimator anim;
 
     private bool readyToAttack = true;
     public bool ReadyToAttack => readyToAttack;
@@ -20,6 +20,7 @@ public class Attack : MonoBehaviour
         damageLayer = LayerMask.GetMask("Damageable");
 
         enemyController = GetComponent<EnemyController>();
+        anim = GetComponent<PlayerAnimator>();
     }
 
     private void FixedUpdate()
@@ -41,6 +42,11 @@ public class Attack : MonoBehaviour
     {
         if (!touchAttack)
         {
+            if (anim != null)
+            {
+                anim.SetSprite(anim.attackSprites[0]);
+            }
+
             readyToAttack = false;
             yield return new WaitForSeconds(equippedWeapon.AttackWindup);
         }
@@ -49,6 +55,11 @@ public class Attack : MonoBehaviour
         Vector2 hitBoxSize = new(equippedWeapon.attackRange, hitboxHeight);
         Vector2 hitBoxOffset = direction * (equippedWeapon.attackRange / 2f);
         Vector2 boxOrigin = (Vector2)transform.position + hitBoxOffset;
+
+        if (anim != null)
+        {
+            anim.SetSprite(anim.attackSprites[1]);
+        }
 
         DrawHitBox(hitBoxSize, hitBoxOffset);
         Collider2D[] hits = Physics2D.OverlapBoxAll(boxOrigin, hitBoxSize, 0, damageLayer);
