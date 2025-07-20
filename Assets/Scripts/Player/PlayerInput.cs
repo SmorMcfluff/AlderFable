@@ -9,8 +9,7 @@ public class PlayerInput : MonoBehaviour
     private InputAction attackAction;
     private InputAction chatAction;
 
-
-    private Movement movement;
+    [HideInInspector] public Movement movement;
     private Attack attack;
     private Chatting chat;
 

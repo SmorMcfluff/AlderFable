@@ -3,7 +3,8 @@ using UnityEngine;
 public class Ladder : MonoBehaviour
 {
     private BoxCollider2D box;
-    private Bounds bounds;
+
+    public Bounds bounds => box.bounds;
 
     public float Top => bounds.max.y;
     public float Bottom => bounds.min.y;
@@ -13,16 +14,17 @@ public class Ladder : MonoBehaviour
     public Platform topPlatform;
     public Platform bottomPlatform;
 
-
     private void Awake()
     {
         box = GetComponent<BoxCollider2D>();
-        bounds = box.bounds;
+    }
 
+    private void Start()
+    {
         AssignPlatforms();
 
-        topPlatform.AddLadder(this);
-        bottomPlatform.AddLadder(this);
+        topPlatform?.AddLadder(this);
+        bottomPlatform?.AddLadder(this);
     }
 
     private void AssignPlatforms()
@@ -31,12 +33,11 @@ public class Ladder : MonoBehaviour
         Vector2 bottomCenter = new(Center.x, Bottom);
         int groundMask = LayerMask.GetMask("Ground");
 
-        Collider2D topHit = Physics2D.OverlapCircle(topCenter, 0.5f, groundMask);
+        Collider2D topHit = Physics2D.OverlapCircle(topCenter, 1f, groundMask);
         if (topHit != null)
         {
             topPlatform = topHit.GetComponent<Platform>();
         }
-
 
         Collider2D bottomHit = Physics2D.OverlapCircle(bottomCenter, 0.5f, groundMask);
         if (bottomHit != null && bottomHit.TryGetComponent(out Platform foundBottomPlatform))

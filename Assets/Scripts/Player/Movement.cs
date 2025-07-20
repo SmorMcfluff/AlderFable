@@ -43,7 +43,7 @@ public class Movement : MonoBehaviour
     private bool readyToClimb = true;
     private bool readyToJump = true;
 
-    private bool isStunned = false;
+    [HideInInspector] public bool isStunned = false;
 
     private float defaultDirection;
 
@@ -110,6 +110,7 @@ public class Movement : MonoBehaviour
         }
         else if (canClimbLadders && currentLadder != null)
         {
+            Debug.Log("On a ladder");
             rb.linearVelocity = new Vector2(0f, vertical * climbingSpeed);
             CheckLadderExit(vertical);
         }
@@ -141,11 +142,22 @@ public class Movement : MonoBehaviour
     {
         return Physics2D.Raycast(transform.position, Vector2.down, groundCheckHeight, groundMask).collider.bounds;
     }
-
     private void TriggerVertical(float direction)
     {
-        if (!canClimbLadders) return;
-        if (currentLadder != null && readyToClimb)
+        if (isStunned) return;
+
+        if (direction > 0 && GetComponent<PlayerInput>())
+        {
+            Collider2D portalCollider = Physics2D.OverlapBox(transform.position, GetColliderBounds().size, 0, LayerMask.GetMask("Portal"));
+            if (portalCollider != null && portalCollider.TryGetComponent(out Portal triggeredPortal))
+            {
+                isStunned = true;
+                triggeredPortal.EnterPortal();
+                return;
+            }
+        }
+
+        if (canClimbLadders && currentLadder != null && readyToClimb)
         {
             bool bottomEntrance = rb.position.y < currentLadder.Top && direction > 0;
             bool topEntrance = rb.position.y > currentLadder.Top && direction < 0;
@@ -153,7 +165,6 @@ public class Movement : MonoBehaviour
             if (bottomEntrance || topEntrance)
             {
                 SetLadder(true, 0, false, topEntrance);
-                return;
             }
         }
     }
@@ -167,6 +178,7 @@ public class Movement : MonoBehaviour
 
         bool topExit = rb.position.y > topPlatformTop - topOffset && direction > 0;
         bool bottomExit = rb.position.y < ladderBottom - topOffset && direction < 0;
+        Debug.Log(topExit + ", " + bottomExit);
 
         if (bottomExit || topExit)
         {
@@ -178,7 +190,6 @@ public class Movement : MonoBehaviour
     {
         if (!canClimbLadders && gotOnLadder) return;
         if (gotOnLadder && !readyToClimb) return;
-        Debug.Log(gotOnLadder);
         isOnLadder = gotOnLadder;
         rb.bodyType = gotOnLadder ? RigidbodyType2D.Kinematic : RigidbodyType2D.Dynamic;
 
@@ -186,6 +197,7 @@ public class Movement : MonoBehaviour
 
         if (gotOnLadder)
         {
+            Debug.Log("Ladder Start");
             float targetY = topEntrance ? currentLadder.Top : rb.position.y;
 
             Vector2 grabbedPos = new(currentLadder.Center.x, targetY);
@@ -193,6 +205,7 @@ public class Movement : MonoBehaviour
         }
         else
         {
+            Debug.Log("Ladder Stop");
             if (jumpedOff)
             {
                 Vector2 ladderJumpForce = new(input * ladderJumpHorizontalForce, ladderJumpVerticalFactor);
@@ -206,14 +219,13 @@ public class Movement : MonoBehaviour
     public void Jump(Vector2 input)
     {
         if (!readyToJump) return;
-        Debug.Log(isOnLadder + ", " + IsGrounded());
         if (!isOnLadder && IsGrounded())
         {
             if (input.y >= 0)
             {
                 rb.AddForce(jumpForce * Vector2.up, ForceMode2D.Impulse);
             }
-            else if (currentPlatform.GetComponent<PlatformEffector2D>())
+            else if (currentPlatform.isOneWay)
             {
                 StartCoroutine(JumpThroughPlatform());
             }
@@ -243,12 +255,7 @@ public class Movement : MonoBehaviour
 
     public void Knockback(float direction, float knockbackForce)
     {
-        if (isOnLadder)
-        {
-            SetLadder(false, direction, true);
-            Stun();
-        }
-        else
+        if (!isOnLadder)
         {
             rb.linearVelocity = Vector2.zero;
             rb.AddForce(new Vector2(direction * knockbackForce, 0), ForceMode2D.Impulse);
@@ -301,7 +308,17 @@ public class Movement : MonoBehaviour
         if (other.CompareTag("Ladder"))
         {
             currentLadder = null;
+            if (isOnLadder)
+            {
+                StartCoroutine(DelayedClearLadder());   
+            }
         }
+    }
+
+    private IEnumerator DelayedClearLadder()
+    {
+        yield return new WaitForSeconds(0.1f); // Adjust to suit
+        SetLadder(false);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -311,7 +328,6 @@ public class Movement : MonoBehaviour
             currentPlatform = collision.collider.GetComponent<Platform>();
         }
     }
-
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()

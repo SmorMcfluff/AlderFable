@@ -204,13 +204,12 @@ public class NPCController : MonoBehaviour
         }
 
         float dirToLadderTarget = Mathf.Sign(nextPlatform.Top - myPos.y);
-        Debug.Log(dirToLadderTarget);
         movement.Move(new(0, dirToLadderTarget));
     }
 
     private bool AttemptDownJump(Platform nextPlatform, float myPosY)
     {
-        if (movement.currentPlatform.isTwoWay)
+        if (movement.currentPlatform.isOneWay)
         {
             return nextPlatform.transform.position.y < myPosY;
         }

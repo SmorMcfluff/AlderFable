@@ -9,7 +9,6 @@ public class ChatBubble : MonoBehaviour
 
     public Transform owner;
     public RectTransform rectTransform;
-    public string userName;
     public float yOffset = 0.75f;
 
     [Header("Chat Bubble References")]
@@ -35,17 +34,17 @@ public class ChatBubble : MonoBehaviour
         }
     }
 
-    public void SendChat(string message)
+    public void SendChat(string username, string message)
     {
         chatBubble.gameObject.SetActive(true);
         bubbleHook.gameObject.SetActive(true);
         StopAllCoroutines();
-        StartCoroutine(ShowMessage(message));
+        StartCoroutine(ShowMessage(username, message));
     }
 
-    private IEnumerator ShowMessage(string message)
+    private IEnumerator ShowMessage(string username, string message)
     {
-        textBox.text = $"{userName}: {message}";
+        textBox.text = $"{username}: {message}";
         yield return new WaitForSeconds(5f);
         bubbleHook.gameObject.SetActive(false);
         chatBubble.gameObject.SetActive(false);

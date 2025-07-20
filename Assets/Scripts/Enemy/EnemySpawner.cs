@@ -7,19 +7,33 @@ public class EnemySpawner : MonoBehaviour
     private static float fadeDuration = 1f;
 
     public EnemyController enemyPrefab;
-    public EnemyController spawnedEnemy;
-    public SpriteRenderer enemySprite;
+    private EnemyController spawnedEnemy;
+    private SpriteRenderer enemySprite;
 
     private void Awake()
     {
         SpawnEnemy();
     }
 
+    private void OnEnable()
+    {
+        SpawnEnemy();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            SpawnEnemy();
+        }
+    }
+
     public void SpawnEnemy()
     {
         if (spawnedEnemy == null)
         {
-            spawnedEnemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+            spawnedEnemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity, transform);
+            spawnedEnemy.name += "_Spawned";  // Helpful for debugging
             enemySprite = spawnedEnemy.GetComponent<SpriteRenderer>();
             spawnedEnemy.owningSpawner = this;
             spawnedEnemy.movement.currentPlatform = GetPlatform();

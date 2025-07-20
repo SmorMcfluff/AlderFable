@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Sword
   m_EditorClassIdentifier: 
   weaponName: Sword
-  minDamage: 1
+  minDamage: 2
   maxDamage: 10
   maxEnemiesHit: 3
   weaponSpeed: 1

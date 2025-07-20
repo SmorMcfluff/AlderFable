@@ -6,10 +6,19 @@ public class Chatting : MonoBehaviour
     public ChatBubble chatBubble;
     public bool isTyping;
     public TMP_InputField chatField;
+    public string username;
 
     private void Awake()
     {
         chatBubble.owner = transform;
+    }
+
+    private void Start()
+    {
+        if (GetComponent<PlayerInput>())
+        {
+            username = GameManager.Instance.username;
+        }
     }
 
     public void ToggleChat()
@@ -28,7 +37,7 @@ public class Chatting : MonoBehaviour
     {
         if (chatField.text.Trim() != string.Empty)
         {
-            chatBubble.SendChat(chatField.text);
+            chatBubble.SendChat(username,   chatField.text);
             chatField.text = string.Empty;
         }
         ToggleChat();

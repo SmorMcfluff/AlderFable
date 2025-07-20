@@ -52,7 +52,6 @@ public class EnemyHealthBar : MonoBehaviour
     {
         if (health == null)
         {
-            Debug.Log(transform.parent.name);
             return;
         }
         health.OnDamaged += HandleHealthbar;
