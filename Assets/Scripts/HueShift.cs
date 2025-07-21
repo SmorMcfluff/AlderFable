@@ -3,12 +3,13 @@ using UnityEngine.UI;
 
 public class HueShifter : MonoBehaviour
 {
+    public AudioSource src;
     public float Speed = 1;
     private Image image;
 
     private void Awake()
     {
-       image = GetComponent<Image>();
+        image = GetComponent<Image>();
     }
 
     void Start()
@@ -19,6 +20,7 @@ public class HueShifter : MonoBehaviour
     public void LevelUp()
     {
         image.enabled = true;
+        src.Play();
         Invoke(nameof(Hide), 1f);
     }
 

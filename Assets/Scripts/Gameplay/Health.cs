@@ -54,7 +54,7 @@ public class Health : MonoBehaviour, IDamageable
 
         OnDamaged?.Invoke();
         SpawnDamageText(damage);
-        src.PlayOneShot(damageSound);
+        src.PlayOneShot(damageSound, 0.5f);
 
         if (currentHealth <= 0)
         {
