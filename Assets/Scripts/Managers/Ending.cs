@@ -4,16 +4,37 @@ using UnityEngine.UI;
 
 public class Ending : MonoBehaviour
 {
+    private float pitchTime;
+    public float pitchFrequency = 1f;
+    public bool isSinewavePitchActive = false;
+
     public string[] messages;
     public int messageIndex;
     public Chatting chatter;
     public Button yesButton;
     public Button noButton;
     public Button whatButton;
+    public AudioClip clip;
 
     private void Awake()
     {
-        HideAllButtons();
+        if (!isSinewavePitchActive)
+        {
+            HideAllButtons();
+        }
+    }
+
+    private void Update()
+    {
+        if (isSinewavePitchActive)
+        {
+            pitchTime += Time.deltaTime * pitchFrequency;
+
+            float sine = Mathf.Sin(pitchTime);
+            float pitch = Mathf.Lerp(0.5f, 2f, (sine + 1f) / 2f);
+            Debug.Log(pitch);
+            GameManager.Instance.source.pitch = pitch;
+        }
     }
 
     private void HideAllButtons()
@@ -102,6 +123,9 @@ public class Ending : MonoBehaviour
 
     public void WaitWhat()
     {
+        GameManager.Instance.source.clip = clip;
+        GameManager.Instance.source.Play();
+        isSinewavePitchActive = true;
         SceneManager.LoadScene("Ending");
     }
 }

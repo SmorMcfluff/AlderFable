@@ -559,7 +559,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8944411380566087772}
+      - m_Target: {fileID: 3870383939955886254}
         m_TargetAssemblyTypeName: Ending, Assembly-CSharp
         m_MethodName: HandleYesNo
         m_Mode: 6
@@ -692,7 +692,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8944411380566087772}
+      - m_Target: {fileID: 3870383939955886254}
         m_TargetAssemblyTypeName: Ending, Assembly-CSharp
         m_MethodName: HandleYesNo
         m_Mode: 6
@@ -1079,6 +1079,66 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ladders: []
   isOneWay: 0
+--- !u!1 &5446867678834329753
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8370068778591970820}
+  - component: {fileID: 3870383939955886254}
+  m_Layer: 0
+  m_Name: EndingManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8370068778591970820
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5446867678834329753}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8257248917064687335}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3870383939955886254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5446867678834329753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45b155ae3b1a4544e9f9519169c162aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pitchFrequency: 1
+  isSinewavePitchActive: 0
+  messages:
+  - yoyo, u new?
+  - nicee! having fun?
+  - Well that sucks because they're shutting down the servers.
+  - Well that's fine because they're shutting the servers down
+  - oh kk, been playing 4 long?
+  - Well I hope you've had your share of fun because they're shutting down the servers.
+  - Well I hope you didn't get too attached because they're shutting down the servers.
+  messageIndex: 0
+  chatter: {fileID: 5106203711971939221}
+  yesButton: {fileID: 2147902270762808368}
+  noButton: {fileID: 1390791784741095005}
+  whatButton: {fileID: 2157253488574281027}
+  clip: {fileID: 8300000, guid: 2d8cf79756351c5469e9210b68912a50, type: 3}
 --- !u!1 &5498786658135742080
 GameObject:
   m_ObjectHideFlags: 0
@@ -1387,7 +1447,7 @@ MonoBehaviour:
   stringMethod:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8944411380566087772}
+      - m_Target: {fileID: 3870383939955886254}
         m_TargetAssemblyTypeName: Ending, Assembly-CSharp
         m_MethodName: InvokeSendMessage
         m_Mode: 1
@@ -1421,7 +1481,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8257248917064687335}
   - component: {fileID: 8798316023730245211}
-  - component: {fileID: 8944411380566087772}
   m_Layer: 0
   m_Name: Ant Map
   m_TagString: Untagged
@@ -1442,6 +1501,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 8370068778591970820}
   - {fileID: 4998105072850430899}
   - {fileID: 5703335232895813701}
   - {fileID: 3894658181269906741}
@@ -1462,31 +1522,6 @@ MonoBehaviour:
   mapElements: {fileID: 3416157312708930133}
   leftPortal: {fileID: 7414649700245306653}
   rightPortal: {fileID: 1674590360667201994}
---- !u!114 &8944411380566087772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6345915964208707104}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45b155ae3b1a4544e9f9519169c162aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  messages:
-  - yoyo, u new?
-  - nicee! having fun?
-  - Well that sucks because they're shutting down the servers.
-  - Well that's fine because they're shutting the servers down
-  - oh kk, been playing 4 long?
-  - Well I hope you've had your share of fun because they're shutting down the servers.
-  - Well I hope you didn't get too attached because they're shutting down the servers.
-  messageIndex: 0
-  chatter: {fileID: 5106203711971939221}
-  yesButton: {fileID: 2147902270762808368}
-  noButton: {fileID: 1390791784741095005}
-  whatButton: {fileID: 2157253488574281027}
 --- !u!1 &6705102873977045580
 GameObject:
   m_ObjectHideFlags: 0
@@ -2600,7 +2635,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8944411380566087772}
+      - m_Target: {fileID: 3870383939955886254}
         m_TargetAssemblyTypeName: Ending, Assembly-CSharp
         m_MethodName: WaitWhat
         m_Mode: 1

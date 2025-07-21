@@ -3,7 +3,8 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    AudioSource source;
+    public AudioSource source;
+    public AudioClip levelUpSound;
 
     public string playerUsername;
     public string[] friendNicknames =
@@ -34,5 +35,10 @@ public class GameManager : MonoBehaviour
             source = GetComponent<AudioSource>();
             DontDestroyOnLoad(gameObject);
         }
+    }
+
+    public void PlayLevelUp()
+    {
+        source.PlayOneShot(levelUpSound);
     }
 }

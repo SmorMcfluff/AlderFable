@@ -872,6 +872,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5cc0b4b3d1c3814c86c66a4119f725a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  source: {fileID: 1011309579}
+  levelUpSound: {fileID: 8300000, guid: 87781d72ab8dab24fade2d8e5c3cd8eb, type: 3}
   playerUsername: 
   friendNicknames:
   - JoeYabuki

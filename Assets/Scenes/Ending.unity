@@ -130,7 +130,6 @@ GameObject:
   - component: {fileID: 647950746}
   - component: {fileID: 647950748}
   - component: {fileID: 647950747}
-  - component: {fileID: 647950749}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -195,19 +194,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 647950745}
   m_CullTransparentMesh: 1
---- !u!114 &647950749
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 647950745}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3b2eb51d54a3f84f97e56c06ef6df6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Speed: 1
 --- !u!1 &872119629
 GameObject:
   m_ObjectHideFlags: 0
@@ -357,6 +343,7 @@ GameObject:
   - component: {fileID: 1774804820}
   - component: {fileID: 1774804819}
   - component: {fileID: 1774804818}
+  - component: {fileID: 1774804822}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -447,6 +434,27 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1774804822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774804817}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45b155ae3b1a4544e9f9519169c162aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pitchFrequency: 0.05
+  isSinewavePitchActive: 1
+  messages: []
+  messageIndex: 0
+  chatter: {fileID: 0}
+  yesButton: {fileID: 0}
+  noButton: {fileID: 0}
+  whatButton: {fileID: 0}
+  clip: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

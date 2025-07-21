@@ -3,9 +3,9 @@ using UnityEngine.UI;
 
 public class HueShifter : MonoBehaviour
 {
-    public AudioSource src;
     public float Speed = 1;
     private Image image;
+    public AudioClip levelUpSound;
 
     private void Awake()
     {
@@ -20,7 +20,7 @@ public class HueShifter : MonoBehaviour
     public void LevelUp()
     {
         image.enabled = true;
-        src.Play();
+        GameManager.Instance.PlayLevelUp();
         Invoke(nameof(Hide), 1f);
     }
 
