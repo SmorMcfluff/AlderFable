@@ -10,6 +10,10 @@ public class Chatting : MonoBehaviour
 
     private void Awake()
     {
+        if (chatBubble == null)
+        {
+            chatBubble = GameObject.Find("YellowDudeChatBubble").GetComponent<ChatBubble>();
+        }
         chatBubble.owner = transform;
     }
 
@@ -17,12 +21,18 @@ public class Chatting : MonoBehaviour
     {
         if (GetComponent<PlayerInput>())
         {
-            username = GameManager.Instance.username;
+            username = GameManager.Instance.playerUsername;
+        }
+        else
+        {
+            int random = Random.Range(0, GameManager.Instance.friendNicknames.Length);
+            username = GameManager.Instance.friendNicknames[random];
         }
     }
 
     public void ToggleChat()
     {
+        if (chatField == null) return;
         chatField.gameObject.SetActive(!chatField.isActiveAndEnabled);
         isTyping = chatField.isActiveAndEnabled;
 
@@ -37,9 +47,14 @@ public class Chatting : MonoBehaviour
     {
         if (chatField.text.Trim() != string.Empty)
         {
-            chatBubble.SendChat(username,   chatField.text);
+            chatBubble.SendChat(username, chatField.text);
             chatField.text = string.Empty;
         }
         ToggleChat();
+    }
+
+    public void SendChat(string message)
+    {
+        chatBubble.SendChat(username, message);
     }
 }

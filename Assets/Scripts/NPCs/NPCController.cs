@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class NPCController : MonoBehaviour
 {
+    public int friendIndex; 
     private Movement movement;
     private Attack attack;
 

@@ -8,6 +8,8 @@ public class PlayerInput : MonoBehaviour
     private InputAction jumpAction;
     private InputAction attackAction;
     private InputAction chatAction;
+    private AudioSource audioSource;
+    private AudioClip levelUp;
 
     [HideInInspector] public Movement movement;
     private Attack attack;
@@ -60,6 +62,11 @@ public class PlayerInput : MonoBehaviour
         {
             attack.TriggerAttack(movement.facingDirection);
         }
+    }
+
+    public void LevelUp()
+    {
+        audioSource.PlayOneShot(levelUp);
     }
 
     private void JumpStart(InputAction.CallbackContext context)

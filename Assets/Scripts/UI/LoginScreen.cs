@@ -36,7 +36,7 @@ public class LoginScreen : MonoBehaviour
         Debug.Log(usernameField.text);
         loginButton.enabled = false;
         FadeManager.Instance.StartFade(Color.black, 1f);
-        GameManager.Instance.username = usernameField.text;
+        GameManager.Instance.playerUsername = usernameField.text;
         Invoke(nameof(ChangeScene), 1);
     }
 

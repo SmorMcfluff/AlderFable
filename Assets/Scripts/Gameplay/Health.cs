@@ -3,9 +3,11 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(AudioSource))]
 public class Health : MonoBehaviour, IDamageable
 {
-
+    private AudioSource src;
+    public AudioClip damageSound;
     [Header("Health Settings")]
     public int maxHealth = 25;
     public float invincibilityTime = 0.75f;
@@ -31,6 +33,7 @@ public class Health : MonoBehaviour, IDamageable
     {
         movement = GetComponentInChildren<Movement>();
         sr = GetComponent<SpriteRenderer>();
+        src = GetComponent<AudioSource>();
         enemyController = GetComponent<EnemyController>();
         defaultColor = sr.color;
 
@@ -49,10 +52,9 @@ public class Health : MonoBehaviour, IDamageable
             currentHealth -= damage;
         }
 
-
         OnDamaged?.Invoke();
         SpawnDamageText(damage);
-
+        src.PlayOneShot(damageSound);
 
         if (currentHealth <= 0)
         {
@@ -88,21 +90,30 @@ public class Health : MonoBehaviour, IDamageable
         dt.Activate();
     }
 
-
     private void Die()
     {
         if (CompareTag("Enemy"))
         {
-            sr.color = Color.clear;
-            movement.enabled = false;
-            enemyController.targets.Clear();
-            enemyController.enabled = false;
-            enemyController.attack.enabled = false;
-            enabled = false;
-            enemyController.owningSpawner.RespawnEnemy();
-            enemyController.healthBar.gameObject.SetActive(false);
+            if (enemyController.owningSpawner != null)
+            {
+                sr.color = Color.clear;
+                movement.enabled = false;
+                enemyController.targets.Clear();
+                enemyController.enabled = false;
+                enemyController.attack.enabled = false;
+                enabled = false;
+                enemyController.owningSpawner.RespawnEnemy();
+                enemyController.healthBar.gameObject.SetActive(false);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
-
+        if (StoryManager.Instance != null)
+        {
+            StoryManager.Instance.EnemyKilled();
+        }
         OnDeath?.Invoke();
     }
 

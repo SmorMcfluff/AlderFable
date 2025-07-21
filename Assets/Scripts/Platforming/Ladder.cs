@@ -23,8 +23,15 @@ public class Ladder : MonoBehaviour
     {
         AssignPlatforms();
 
-        topPlatform?.AddLadder(this);
-        bottomPlatform?.AddLadder(this);
+        if (topPlatform != null)
+        {
+            topPlatform.AddLadder(this);
+        }
+
+        if (bottomPlatform != null)
+        {
+            bottomPlatform.AddLadder(this);
+        }
     }
 
     private void AssignPlatforms()
@@ -33,23 +40,29 @@ public class Ladder : MonoBehaviour
         Vector2 bottomCenter = new(Center.x, Bottom);
         int groundMask = LayerMask.GetMask("Ground");
 
-        Collider2D topHit = Physics2D.OverlapCircle(topCenter, 1f, groundMask);
-        if (topHit != null)
+        if (topPlatform == null)
         {
-            topPlatform = topHit.GetComponent<Platform>();
+            Collider2D topHit = Physics2D.OverlapCircle(topCenter, 1f, groundMask);
+            if (topHit != null)
+            {
+                topPlatform = topHit.GetComponent<Platform>();
+            }
         }
 
-        Collider2D bottomHit = Physics2D.OverlapCircle(bottomCenter, 0.5f, groundMask);
-        if (bottomHit != null && bottomHit.TryGetComponent(out Platform foundBottomPlatform))
+        if (bottomPlatform == null)
         {
-            bottomPlatform = foundBottomPlatform;
-        }
-        else
-        {
-            RaycastHit2D rayHit = Physics2D.Raycast(bottomCenter, Vector2.down, 3f, groundMask);
-            if (rayHit.collider != null)
+            Collider2D bottomHit = Physics2D.OverlapCircle(bottomCenter, 0.5f, groundMask);
+            if (bottomHit != null && bottomHit.TryGetComponent(out Platform foundBottomPlatform))
             {
-                bottomPlatform = rayHit.collider.GetComponent<Platform>();
+                bottomPlatform = foundBottomPlatform;
+            }
+            else
+            {
+                RaycastHit2D rayHit = Physics2D.Raycast(bottomCenter, Vector2.down, 3f, groundMask);
+                if (rayHit.collider != null)
+                {
+                    bottomPlatform = rayHit.collider.GetComponent<Platform>();
+                }
             }
         }
     }
